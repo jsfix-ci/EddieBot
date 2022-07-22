@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import { CACHE_MANAGER, HttpService, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
@@ -15,16 +16,14 @@ export class TokenCacheService {
     serverId: string,
     scopes: string[],
   ): Promise<TokenResponse> {
-    const response = await this.http
+    const response = await lastValueFrom(this.http
       .post(
         this.url,
         {
           scopes: scopes,
           serverId,
         },
-        { headers: { 'Client-Token': this.config.get('API_TOKEN') } },
-      )
-      .toPromise();
+        { headers: { 'Client-Token': this.config.get('API_TOKEN') } }));
 
     const payload = response.data as TokenResponse;
 
